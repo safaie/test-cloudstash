@@ -1,0 +1,72 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+
+imports:
+  - file: radonnodesabstract__ObjectStorage.tosca
+    namespace_uri: radon.nodes.abstract
+    namespace_prefix: radonnodesabstract
+  - file: radonartifacts__Ansible.tosca
+    namespace_uri: radon.artifacts
+    namespace_prefix: radonartifacts
+  - file: radonnodesaws__AwsPlatform.tosca
+    namespace_uri: radon.nodes.aws
+    namespace_prefix: radonnodesaws
+  - file: radoncapabilities__Invocable.tosca
+    namespace_uri: radon.capabilities
+    namespace_prefix: radoncapabilities
+  - file: radonrelationshipsaws__AwsTriggers.tosca
+    namespace_uri: radon.relationships.aws
+    namespace_prefix: radonrelationshipsaws
+  - file: radonnodesabstract__Function.tosca
+    namespace_uri: radon.nodes.abstract
+    namespace_prefix: radonnodesabstract
+node_types:
+  radon.nodes.aws.AwsS3Bucket:
+    derived_from: radon.nodes.abstract.ObjectStorage
+    metadata:
+      targetNamespace: "radon.nodes.aws"
+      abstract: "false"
+      final: "false"
+    attributes:
+      bucket_name:
+        type: string
+      region:
+        type: string
+    requirements:
+      - host:
+          capability: tosca.capabilities.Container
+          node: radon.nodes.aws.AwsPlatform
+          relationship: tosca.relationships.HostedOn
+          occurrences: [ 1, 1 ]
+      - invoker:
+          capability: radon.capabilities.Invocable
+          node: radon.nodes.abstract.Function
+          relationship: radon.relationships.aws.AwsTriggers
+          occurrences: [ 0, UNBOUNDED ]
+    interfaces:
+      Standard:
+        type: tosca.interfaces.node.lifecycle.Standard
+        inputs:
+          aws_region:
+            type: string
+            required: true
+            default: { get_property: [ SELF, host, region ] }
+          bucket_name:
+            type: string
+            required: true
+            default: { get_property: [ SELF, name ] }
+        operations:
+          create:
+            implementation:
+              primary: /nodetypes/radon.nodes.aws/AwsS3Bucket/files/create/create.yml
+              timeout: 0
+          delete:
+            implementation:
+              primary: /nodetypes/radon.nodes.aws/AwsS3Bucket/files/delete/delete.yml
+              timeout: 0
+    artifacts:
+      create:
+        type: radon.artifacts.Ansible
+        file: /nodetypes/radon.nodes.aws/AwsS3Bucket/files/create/create.yml
+      delete:
+        type: radon.artifacts.Ansible
+        file: /nodetypes/radon.nodes.aws/AwsS3Bucket/files/delete/delete.yml

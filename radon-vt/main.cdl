@@ -1,0 +1,46 @@
+import "_definitions/steIgeneral__cloudstash.tosca" [type, node];
+
+types = {
+  radon.nodes.aws.AwsLambdaFunction,
+  radon.nodes.aws.AwsPlatform,
+  radon.nodes.aws.AwsDynamoDBTable,
+  radon.nodes.aws.AwsApiGateway,
+  radon.nodes.aws.AwsS3Bucket
+};
+
+$X.host_node := $X.requirements[$Y].host.node;
+lambdas      ::= $N : $N.type = radon.nodes.aws.AwsLambdaFunction;
+
+sensitive_data = {AwsDynamoDBTable_2, AwsDynamoDBTable_5, AwsS3Bucket_0 };
+
+AwsLambdaFunction_0.endpoints = { AwsDynamoDBTable_2 };
+AwsLambdaFunction_1.endpoints = { AwsDynamoDBTable_5 };
+AwsLambdaFunction_2.endpoints = { AwsDynamoDBTable_3 };
+AwsLambdaFunction_3.endpoints = { AwsDynamoDBTable_5 };
+AwsLambdaFunction_4.endpoints = { AwsDynamoDBTable_4, AwsDynamoDBTable_5 };
+AwsLambdaFunction_5.endpoints = { };
+AwsLambdaFunction_6.endpoints = { AwsDynamoDBTable_5 };
+AwsLambdaFunction_7.endpoints = { };
+AwsLambdaFunction_8.endpoints = { AwsDynamoDBTable_2 };
+AwsLambdaFunction_9.endpoints = { AwsDynamoDBTable_3 };
+AwsLambdaFunction_10.endpoints = { AwsDynamoDBTable_4 };
+AwsLambdaFunction_11.endpoints = { AwsDynamoDBTable_4 };
+AwsLambdaFunction_12.endpoints = { AwsDynamoDBTable_2 };
+AwsLambdaFunction_13.endpoints = { AwsDynamoDBTable_4, AwsS3Bucket_0 };
+AwsLambdaFunction_15.endpoints = { AwsDynamoDBTable_4, AwsDynamoDBTable_2, AwsS3Bucket_0 };
+AwsLambdaFunction_16.endpoints = { AwsDynamoDBTable_1 };
+
+
+INCONSISTENCY d {
+  l <- lambdas;
+  n <- l.endpoints;
+  n <- sensitive_data;
+  ASSERT((l.host_node != n.host_node));
+};
+
+@show l;
+@show n;
+
+platforms = { AwsPlatform_0, AwsPlatform_1 };
+
+@definable $X.host.node, platforms;

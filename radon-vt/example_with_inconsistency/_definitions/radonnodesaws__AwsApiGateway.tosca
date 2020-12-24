@@ -1,0 +1,88 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+
+imports:
+  - file: radonnodesabstract__ApiGateway.tosca
+    namespace_uri: radon.nodes.abstract
+    namespace_prefix: radonnodesabstract
+  - file: radonartifacts__Ansible.tosca
+    namespace_uri: radon.artifacts
+    namespace_prefix: radonartifacts
+  - file: radonnodesaws__AwsPlatform.tosca
+    namespace_uri: radon.nodes.aws
+    namespace_prefix: radonnodesaws
+  - file: radonrelationshipsaws__ApiGatewayTriggers.tosca
+    namespace_uri: radon.relationships.aws
+    namespace_prefix: radonrelationshipsaws
+  - file: radoncapabilities__Invocable.tosca
+    namespace_uri: radon.capabilities
+    namespace_prefix: radoncapabilities
+  - file: radonnodesaws__AwsLambdaFunction.tosca
+    namespace_uri: radon.nodes.aws
+    namespace_prefix: radonnodesaws
+node_types:
+  radon.nodes.aws.AwsApiGateway:
+    derived_from: radon.nodes.abstract.ApiGateway
+    metadata:
+      targetNamespace: "radon.nodes.aws"
+      abstract: "false"
+      final: "false"
+    attributes:
+      arn:
+        type: string
+    properties:
+      api_title:
+        type: string
+        description: Name of the API
+      api_description:
+        type: string
+        description: Description of the API
+      api_version:
+        type: string
+        description: Version of the API
+    requirements:
+      - host:
+          capability: tosca.capabilities.Container
+          node: radon.nodes.aws.AwsPlatform
+          relationship: tosca.relationships.HostedOn
+          occurrences: [ 1, 1 ]
+      - invoker:
+          capability: radon.capabilities.Invocable
+          node: radon.nodes.aws.AwsLambdaFunction
+          relationship: radon.relationships.aws.ApiGatewayTriggers
+          occurrences: [ 0, UNBOUNDED ]
+    interfaces:
+      Standard:
+        type: tosca.interfaces.node.lifecycle.Standard
+        inputs:
+          api_title:
+            type: string
+            required: true
+            default: { get_property: [ SELF, api_title ] }
+          aws_region:
+            type: string
+            required: true
+            default: { get_property: [ SELF, host, region ] }
+          api_description:
+            type: string
+            required: true
+            default: { get_property: [ SELF, api_description ] }
+          api_version:
+            type: string
+            required: true
+            default: { get_property: [ SELF, api_version ] }
+        operations:
+          create:
+            implementation:
+              primary: /nodetypes/radon.nodes.aws/AwsApiGateway/files/create/create.yml
+              timeout: 0
+          configure:
+            implementation:
+              primary: /nodetypes/radon.nodes.aws/AwsApiGateway/files/configure/configure.yml
+              timeout: 0
+    artifacts:
+      create:
+        type: radon.artifacts.Ansible
+        file: /nodetypes/radon.nodes.aws/AwsApiGateway/files/create/create.yml
+      configure:
+        type: radon.artifacts.Ansible
+        file: /nodetypes/radon.nodes.aws/AwsApiGateway/files/configure/configure.yml

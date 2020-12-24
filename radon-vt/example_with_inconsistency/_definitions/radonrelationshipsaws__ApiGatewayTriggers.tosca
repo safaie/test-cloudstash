@@ -1,0 +1,51 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+
+imports:
+  - file: radonrelationships__Triggers.tosca
+    namespace_uri: radon.relationships
+    namespace_prefix: radonrelationships
+relationship_types:
+  radon.relationships.aws.ApiGatewayTriggers:
+    description: AWS-specific relationship type representing ApiGateway-to-AwsLambdaFunction communication
+    derived_from: radon.relationships.Triggers
+    metadata:
+      targetNamespace: "radon.relationships.aws"
+      abstract: "false"
+      final: "false"
+    properties:
+      endpoint:
+        type: string
+        description: Endpoint name
+      http_methods:
+        type: string
+        description: List of HTTP methods
+    interfaces:
+      Configure:
+        type: tosca.interfaces.relationship.Configure
+        inputs:
+          endpoint:
+            type: string
+            required: true
+            default: { get_property: [ SELF, endpoint ] }
+          aws_region:
+            type: string
+            required: true
+            default: { get_attribute: [ TARGET, region ] }
+          role_arn:
+            type: string
+            required: true
+            default: { get_attribute: [ TARGET, role_arn ] }
+          function_arn:
+            type: string
+            required: true
+            default: { get_attribute: [ TARGET, arn ] }
+          http_methods:
+            type: string
+            required: true
+            default: { get_property: [ SELF, http_methods ] }
+        operations:
+          pre_configure_source:
+            implementation:
+              primary: /relationshiptypes/radon.relationships.aws/ApiGatewayTriggers/files/pre_configure_source.yml
+              dependencies: [ /relationshiptypes/radon.relationships.aws/ApiGatewayTriggers/files/generator.py ]
+              timeout: 0

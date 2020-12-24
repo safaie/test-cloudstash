@@ -1,0 +1,42 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+
+imports:
+  - file: radonrelationships__Triggers.tosca
+    namespace_uri: radon.relationships
+    namespace_prefix: radonrelationships
+  - file: radoncapabilities__Invocable.tosca
+    namespace_uri: radon.capabilities
+    namespace_prefix: radoncapabilities
+  - file: tyIgeneral__Entry.tosca
+    namespace_uri: radon.datatypes
+    namespace_prefix: tyIgeneral
+  - file: radonnodesabstract__CloudPlatform.tosca
+    namespace_uri: radon.nodes.abstract
+    namespace_prefix: radonnodesabstract
+  - file: radonnodesabstract__Function.tosca
+    namespace_uri: radon.nodes.abstract
+    namespace_prefix: radonnodesabstract
+node_types:
+  radon.nodes.abstract.ObjectStorage:
+    derived_from: tosca.nodes.Storage.ObjectStorage
+    metadata:
+      targetNamespace: "radon.nodes.abstract"
+      abstract: "false"
+      final: "false"
+    properties:
+      entries:
+        type: map
+        required: false
+        entry_schema:
+          type: radon.datatypes.Entry
+    requirements:
+      - host:
+          capability: tosca.capabilities.Container
+          node: radon.nodes.abstract.CloudPlatform
+          relationship: tosca.relationships.HostedOn
+          occurrences: [ 1, 1 ]
+      - invoker:
+          capability: radon.capabilities.Invocable
+          node: radon.nodes.abstract.Function
+          relationship: radon.relationships.Triggers
+          occurrences: [ 0, UNBOUNDED ]

@@ -1,0 +1,25 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+
+imports:
+  - file: radonnodesabstract__ObjectStorage.tosca
+    namespace_uri: radon.nodes.abstract
+    namespace_prefix: radonnodesabstract
+  - file: radonnodesabstract__Function.tosca
+    namespace_uri: radon.nodes.abstract
+    namespace_prefix: radonnodesabstract
+node_types:
+  radon.nodes.abstract.CloudPlatform:
+    derived_from: tosca.nodes.Root
+    metadata:
+      targetNamespace: "radon.nodes.abstract"
+      abstract: "false"
+      final: "false"
+    properties:
+      name:
+        type: string
+        required: false
+    capabilities:
+      host:
+        occurrences: [ 1, UNBOUNDED ]
+        valid_source_types: [ radon.nodes.abstract.Function, radon.nodes.abstract.ObjectStorage ]
+        type: tosca.capabilities.Container

@@ -1,0 +1,9 @@
+{
+  'name': 'Cli-test-unique-id',
+  'repository_url': 'https://github.com/AlexSpart/Cloudstash.git',
+  'sut_tosca_path': 'radon-ctt-cli-testing/todolist.csar',
+  'ti_tosca_path': 'radon-ctt-cli-testing/DeploymentTestAgentEC2.csar',
+  'ti_inputs_path': 'radon-ctt-cli-testing/inputs.yaml',
+  'result_destination_path': '/tmp/results.zip',
+  'test_id': 'deploymentTest_test_id-for-cli_01',
+}

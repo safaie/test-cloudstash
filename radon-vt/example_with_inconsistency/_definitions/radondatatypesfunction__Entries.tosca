@@ -1,0 +1,16 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+
+imports:
+  - file: tyIgeneral__Entry.tosca
+    namespace_uri: radon.datatypes
+    namespace_prefix: tyIgeneral
+data_types:
+  radon.datatypes.function.Entries:
+    derived_from: tosca.datatypes.Root
+    metadata:
+      targetNamespace: "radon.datatypes.function"
+      abstract: "false"
+      final: "false"
+    properties:
+      execute:
+        type: radon.datatypes.Entry

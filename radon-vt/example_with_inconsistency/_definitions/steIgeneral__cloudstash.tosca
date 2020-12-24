@@ -1,0 +1,1007 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+
+metadata:
+  targetNamespace: "PRQ.servicetemplates"
+  name: "cloudstash"
+imports:
+  - file: radonnodesaws__AwsDynamoDBTable.tosca
+    namespace_uri: radon.nodes.aws
+    namespace_prefix: radonnodesaws
+  - file: radonnodesaws__AwsLambdaFunction.tosca
+    namespace_uri: radon.nodes.aws
+    namespace_prefix: radonnodesaws
+  - file: radonartifactsarchive__Zip.tosca
+    namespace_uri: radon.artifacts.archive
+    namespace_prefix: radonartifactsarchive
+  - file: radonnodesaws__AwsS3Bucket.tosca
+    namespace_uri: radon.nodes.aws
+    namespace_prefix: radonnodesaws
+  - file: radonnodesaws__AwsPlatform.tosca
+    namespace_uri: radon.nodes.aws
+    namespace_prefix: radonnodesaws
+  - file: radonnodesaws__AwsApiGateway.tosca
+    namespace_uri: radon.nodes.aws
+    namespace_prefix: radonnodesaws
+  - file: radonrelationshipsaws__ApiGatewayTriggers.tosca
+    namespace_uri: radon.relationships.aws
+    namespace_prefix: radonrelationshipsaws
+  - file: radonrelationships__ConnectsTo.tosca
+    namespace_uri: radon.relationships
+    namespace_prefix: radonrelationships
+  - file: radonpoliciestesting__HttpEndpointTest.tosca
+    namespace_uri: radon.policies.testing
+    namespace_prefix: radonpoliciestesting
+topology_template:
+  node_templates:
+    AwsDynamoDBTable_2:
+      type: radon.nodes.aws.AwsDynamoDBTable
+      metadata:
+        x: "1757"
+        y: "351"
+        displayName: "artifacts-dev"
+      properties:
+        hash_key_name: "artifactId"
+        read_capacity: 5
+        write_capacity: 5
+        hash_key_type: "STRING"
+        table_name: "artifacts-dev"
+      requirements:
+        - host:
+            node: AwsPlatform_0
+            relationship: con_HostedOn_21
+            capability: host
+    AwsDynamoDBTable_3:
+      type: radon.nodes.aws.AwsDynamoDBTable
+      metadata:
+        x: "1760"
+        y: "516"
+        displayName: "organizations"
+      properties:
+        hash_key_name: "organizationName"
+        read_capacity: 5
+        write_capacity: 5
+        hash_key_type: "STRING"
+        table_name: "organizations"
+      requirements:
+        - host:
+            node: AwsPlatform_0
+            relationship: con_HostedOn_20
+            capability: host
+    AwsDynamoDBTable_4:
+      type: radon.nodes.aws.AwsDynamoDBTable
+      metadata:
+        x: "1758"
+        y: "431"
+        displayName: "repositories"
+      properties:
+        hash_key_name: "organization"
+        read_capacity: 5
+        write_capacity: 5
+        hash_key_type: "STRING"
+        table_name: "repositories"
+      requirements:
+        - host:
+            node: AwsPlatform_0
+            relationship: con_HostedOn_19
+            capability: host
+    AwsDynamoDBTable_5:
+      type: radon.nodes.aws.AwsDynamoDBTable
+      metadata:
+        x: "1758"
+        y: "277"
+        displayName: "users"
+      properties:
+        hash_key_name: "Username"
+        read_capacity: 5
+        write_capacity: 5
+        hash_key_type: "STRING"
+        table_name: "users"
+      requirements:
+        - host:
+            node: AwsPlatform_0
+            relationship: con_HostedOn_18
+            capability: host
+    AwsLambdaFunction_1:
+      type: radon.nodes.aws.AwsLambdaFunction
+      metadata:
+        x: "1211"
+        y: "756"
+        displayName: "user_info"
+      properties:
+        handler: "user_info.get_user_info"
+        memory: 256
+        name: "user_info"
+        runtime: "python3.6"
+        alias: "dev"
+        statement_id: "prq_statement"
+        zip_file: "1ee46a5b1da601bc0a76f00c53367a"
+        timeout: 300
+        concurrency: 0
+        env_vars:
+          ARTIFACT_TABLE: "artifacts-dev"
+          USER_TABLE: "users"
+          PUSH_GATEWAY_HOST: "3.127.254.144:9091"
+          ORGANIZATION_TABLE: "organizations"
+          APPTOKENS_TABLE: "apptokens"
+          BUCKET_NAME: "radon-repository-testing"
+          REPOSITORY_TABLE: "repositories"
+      requirements:
+        - endpoint:
+            node: AwsDynamoDBTable_5
+            relationship: con_ConnectsTo_16
+            capability: database_endpoint
+        - host:
+            node: AwsPlatform_0
+            relationship: con_HostedOn_5
+            capability: host
+      artifacts:
+        user_info_artifacts:
+          type: radon.artifacts.archive.Zip
+          file: /servicetemplates/PRQ.servicetemplates/cloudstash/files/AwsLambdaFunction_1/user_info_artifacts/1ee46a5b1da601bc0a76f00c53367a
+    AwsLambdaFunction_2:
+      type: radon.nodes.aws.AwsLambdaFunction
+      metadata:
+        x: "714"
+        y: "591"
+        displayName: "create_org"
+      properties:
+        handler: "create_org.create_organization"
+        memory: 256
+        name: "create_org"
+        runtime: "python3.6"
+        alias: "dev"
+        statement_id: "prq_statement"
+        zip_file: "333e95fbbe61433e3f0dd629201d61"
+        timeout: 300
+        concurrency: 0
+        env_vars:
+          ARTIFACT_TABLE: "artifacts-dev"
+          USER_TABLE: "users"
+          PUSH_GATEWAY_HOST: "3.127.254.144:9091"
+          ORGANIZATION_TABLE: "organizations"
+          APPTOKENS_TABLE: "apptokens"
+          BUCKET_NAME: "radon-repository-testing"
+          REPOSITORY_TABLE: "repositories"
+      requirements:
+        - endpoint:
+            node: AwsDynamoDBTable_3
+            relationship: con_ConnectsTo_1
+            capability: database_endpoint
+        - host:
+            node: AwsPlatform_1
+            relationship: con_HostedOn_9
+            capability: host
+      artifacts:
+        create_organization_artifacts:
+          type: radon.artifacts.archive.Zip
+          file: /servicetemplates/PRQ.servicetemplates/cloudstash/files/AwsLambdaFunction_2/create_organization_artifacts/333e95fbbe61433e3f0dd629201d61
+    AwsLambdaFunction_0:
+      type: radon.nodes.aws.AwsLambdaFunction
+      metadata:
+        x: "1203"
+        y: "326"
+        displayName: "artifact_details"
+      properties:
+        handler: "artifact_details.get_artifact"
+        memory: 256
+        name: "artifact_details"
+        runtime: "python3.6"
+        alias: "dev"
+        statement_id: "prq_statement"
+        zip_file: "e7138b807b6eff74bbaa9bc3b2797d"
+        timeout: 300
+        concurrency: 0
+        env_vars:
+          ARTIFACT_TABLE: "artifacts-dev"
+          USER_TABLE: "users"
+          PUSH_GATEWAY_HOST: "3.127.254.144:9091"
+          ORGANIZATION_TABLE: "organizations"
+          APPTOKENS_TABLE: "apptokens"
+          BUCKET_NAME: "radon-repository-testing"
+          REPOSITORY_TABLE: "repositories"
+      requirements:
+        - endpoint:
+            node: AwsDynamoDBTable_2
+            relationship: con_ConnectsTo_0
+            capability: database_endpoint
+        - host:
+            node: AwsPlatform_0
+            relationship: con_HostedOn_6
+            capability: host
+      artifacts:
+        artifact_details_artifacts:
+          type: radon.artifacts.archive.Zip
+          file: /servicetemplates/PRQ.servicetemplates/cloudstash/files/AwsLambdaFunction_0/artifact_details_artifacts/e7138b807b6eff74bbaa9bc3b2797d
+    AwsDynamoDBTable_1:
+      type: radon.nodes.aws.AwsDynamoDBTable
+      metadata:
+        x: "1759"
+        y: "592"
+        displayName: "apptokens"
+      properties:
+        hash_key_name: "token"
+        read_capacity: 5
+        write_capacity: 5
+        hash_key_type: "STRING"
+        table_name: "apptoken"
+      requirements:
+        - host:
+            node: AwsPlatform_0
+            relationship: con_HostedOn_16
+            capability: host
+    AwsS3Bucket_0:
+      type: radon.nodes.aws.AwsS3Bucket
+      metadata:
+        x: "1250"
+        y: "1060"
+        displayName: "radon-repository-testing"
+      properties:
+        size: "0 MB"
+        name: "radon-repository-testing"
+      requirements:
+        - host:
+            node: AwsPlatform_0
+            relationship: con_HostedOn_14
+            capability: host
+    AwsPlatform_1:
+      type: radon.nodes.aws.AwsPlatform
+      metadata:
+        x: "168"
+        y: "630"
+        displayName: "AWS_platform_US"
+      properties:
+        name: "PRQ_AWS_global"
+        region: "us-east-1"
+    AwsPlatform_0:
+      type: radon.nodes.aws.AwsPlatform
+      metadata:
+        x: "1975"
+        y: "788"
+        displayName: "AWS_platform_EU"
+      properties:
+        name: "PRQ_AWS_sensitive_information"
+        region: "eu-central-1"
+    AwsLambdaFunction_16:
+      type: radon.nodes.aws.AwsLambdaFunction
+      metadata:
+        x: "714"
+        y: "683"
+        displayName: "create_app_token"
+      properties:
+        handler: "create_app_token.create_app_token"
+        memory: 256
+        name: "create_app_token"
+        runtime: "python3.6"
+        alias: "dev"
+        statement_id: "prq_statement"
+        zip_file: "9928c6f73c2e88f23fc01ff0ead3ef"
+        timeout: 300
+        concurrency: 0
+        env_vars:
+          ARTIFACT_TABLE: "artifacts-dev"
+          USER_TABLE: "users"
+          PUSH_GATEWAY_HOST: "3.127.254.144:9091"
+          ORGANIZATION_TABLE: "organizations"
+          APPTOKENS_TABLE: "apptokens"
+          BUCKET_NAME: "radon-repository"
+          REPOSITORY_TABLE: "repositories"
+      requirements:
+        - endpoint:
+            node: AwsDynamoDBTable_1
+            relationship: con_ConnectsTo_17
+            capability: database_endpoint
+        - host:
+            node: AwsPlatform_1
+            relationship: con_HostedOn_22
+            capability: host
+      artifacts:
+        create_app_token_artifacts:
+          type: radon.artifacts.archive.Zip
+          file: /servicetemplates/PRQ.servicetemplates/cloudstash/files/AwsLambdaFunction_16/create_app_token_artifacts/9928c6f73c2e88f23fc01ff0ead3ef
+    AwsLambdaFunction_12:
+      type: radon.nodes.aws.AwsLambdaFunction
+      metadata:
+        x: "1206"
+        y: "400"
+        displayName: "list_version"
+      properties:
+        handler: "list_version.get_versions"
+        memory: 256
+        name: "list_version"
+        runtime: "python3.6"
+        alias: "dev"
+        statement_id: "prq_statement"
+        zip_file: "a38d274af13e27216929e74ccb2045"
+        timeout: 300
+        concurrency: 0
+        env_vars:
+          ARTIFACT_TABLE: "artifacts-dev"
+          USER_TABLE: "users"
+          PUSH_GATEWAY_HOST: "3.127.254.144:9091"
+          ORGANIZATION_TABLE: "organizations"
+          APPTOKENS_TABLE: "apptokens"
+          BUCKET_NAME: "radon-repository-testing"
+          REPOSITORY_TABLE: "repositories"
+      requirements:
+        - endpoint:
+            node: AwsDynamoDBTable_2
+            relationship: con_ConnectsTo_10
+            capability: database_endpoint
+        - host:
+            node: AwsPlatform_0
+            relationship: con_HostedOn_8
+            capability: host
+      artifacts:
+        list_version_artifacts:
+          type: radon.artifacts.archive.Zip
+          file: /servicetemplates/PRQ.servicetemplates/cloudstash/files/AwsLambdaFunction_12/list_version_artifacts/a38d274af13e27216929e74ccb2045
+    AwsLambdaFunction_5:
+      type: radon.nodes.aws.AwsLambdaFunction
+      metadata:
+        x: "712"
+        y: "402"
+        displayName: "user_logout"
+      properties:
+        handler: "user_logout.logout"
+        memory: 256
+        name: "user_logout"
+        runtime: "python3.6"
+        alias: "dev"
+        statement_id: "prq_statement"
+        zip_file: "e4584f163ee827667a16e374a03f39"
+        timeout: 300
+        concurrency: 0
+        env_vars:
+          ARTIFACT_TABLE: "artifacts-dev"
+          USER_TABLE: "users"
+          PUSH_GATEWAY_HOST: "3.127.254.144:9091"
+          ORGANIZATION_TABLE: "organizations"
+          APPTOKENS_TABLE: "apptokens"
+          BUCKET_NAME: "radon-repository-testing"
+          REPOSITORY_TABLE: "repositories"
+      requirements:
+        - host:
+            node: AwsPlatform_1
+            relationship: con_HostedOn_13
+            capability: host
+      artifacts:
+        user_logout_artifacts:
+          type: radon.artifacts.archive.Zip
+          file: /servicetemplates/PRQ.servicetemplates/cloudstash/files/AwsLambdaFunction_5/user_logout_artifacts/e4584f163ee827667a16e374a03f39
+    AwsLambdaFunction_13:
+      type: radon.nodes.aws.AwsLambdaFunction
+      metadata:
+        x: "1211"
+        y: "829"
+        displayName: "upload_artifact"
+      properties:
+        handler: "upload_artifact.upload_artifact"
+        memory: 256
+        name: "upload_artifact"
+        runtime: "python3.6"
+        alias: "dev"
+        statement_id: "prq_statement"
+        zip_file: "4bfcd48c6b1c8b33028e3a89c8ac49"
+        timeout: 300
+        concurrency: 0
+        env_vars:
+          ARTIFACT_TABLE: "artifacts-dev"
+          USER_TABLE: "users"
+          PUSH_GATEWAY_HOST: "3.127.254.144:9091"
+          ORGANIZATION_TABLE: "organizations"
+          APPTOKENS_TABLE: "apptokens"
+          BUCKET_NAME: "radon-repository-testing"
+          REPOSITORY_TABLE: "repositories"
+      requirements:
+        - endpoint:
+            node: AwsDynamoDBTable_4
+            relationship: con_ConnectsTo_11
+            capability: database_endpoint
+        - endpoint:
+            node: AwsS3Bucket_0
+            relationship: con_ConnectsTo_12
+            capability: storage_endpoint
+        - host:
+            node: AwsPlatform_0
+            relationship: con_HostedOn_7
+            capability: host
+      artifacts:
+        upload_artifact_artifacts:
+          type: radon.artifacts.archive.Zip
+          file: /servicetemplates/PRQ.servicetemplates/cloudstash/files/AwsLambdaFunction_13/upload_artifact_artifacts/4bfcd48c6b1c8b33028e3a89c8ac49
+    AwsLambdaFunction_6:
+      type: radon.nodes.aws.AwsLambdaFunction
+      metadata:
+        x: "1207"
+        y: "617"
+        displayName: "create_user"
+      properties:
+        handler: "create_user.sign_up"
+        memory: 256
+        name: "create_user"
+        runtime: "python3.7"
+        alias: "dev"
+        statement_id: "prq_statement"
+        zip_file: "def00bc14aac582c726c39f90f0a2f"
+        timeout: 300
+        concurrency: 0
+        env_vars:
+          ARTIFACT_TABLE: "artifacts-dev"
+          USER_TABLE: "users"
+          PUSH_GATEWAY_HOST: "3.127.254.144:9091"
+          ORGANIZATION_TABLE: "organizations"
+          APPTOKENS_TABLE: "apptokens"
+          BUCKET_NAME: "radon-repository-testing"
+          REPOSITORY_TABLE: "repositories"
+      requirements:
+        - endpoint:
+            node: AwsDynamoDBTable_5
+            relationship: con_ConnectsTo_5
+            capability: database_endpoint
+        - host:
+            node: AwsPlatform_0
+            relationship: con_HostedOn_0
+            capability: host
+      artifacts:
+        create_user_artifacts:
+          type: radon.artifacts.archive.Zip
+          file: /servicetemplates/PRQ.servicetemplates/cloudstash/files/AwsLambdaFunction_6/create_user_artifacts/def00bc14aac582c726c39f90f0a2f
+    AwsLambdaFunction_3:
+      type: radon.nodes.aws.AwsLambdaFunction
+      metadata:
+        x: "1210"
+        y: "687"
+        displayName: "user_login"
+      properties:
+        handler: "user_login.login"
+        memory: 256
+        name: "user_login"
+        runtime: "python3.6"
+        alias: "dev"
+        statement_id: "prq_statement"
+        zip_file: "4b3f5827946c471637ccd6271408e1"
+        timeout: 300
+        env_vars:
+          ARTIFACT_TABLE: "artifacts-dev"
+          USER_TABLE: "users"
+          PUSH_GATEWAY_HOST: "3.127.254.144:9091"
+          ORGANIZATION_TABLE: "organizations"
+          APPTOKENS_TABLE: "apptokens"
+          BUCKET_NAME: "radon-repository-testing"
+          REPOSITORY_TABLE: "repositories"
+        concurrency: 0
+      requirements:
+        - endpoint:
+            node: AwsDynamoDBTable_5
+            relationship: con_ConnectsTo_2
+            capability: database_endpoint
+        - host:
+            node: AwsPlatform_0
+            relationship: con_HostedOn_3
+            capability: host
+      artifacts:
+        user_login_artifacts:
+          type: radon.artifacts.archive.Zip
+          file: /servicetemplates/PRQ.servicetemplates/cloudstash/files/AwsLambdaFunction_3/user_login_artifacts/4b3f5827946c471637ccd6271408e1
+    AwsLambdaFunction_15:
+      type: radon.nodes.aws.AwsLambdaFunction
+      metadata:
+        x: "1208"
+        y: "903"
+        displayName: "artifact_download"
+      properties:
+        handler: "artifact_download.get_artifact"
+        memory: 256
+        name: "artifact_download"
+        runtime: "python3.6"
+        alias: "dev"
+        statement_id: "prq_statement"
+        zip_file: "e9f86f805f01c3dbf9575b8177ee74"
+        timeout: 300
+        concurrency: 0
+        env_vars:
+          ARTIFACT_TABLE: "artifacts-dev"
+          USER_TABLE: "users"
+          PUSH_GATEWAY_HOST: "3.127.254.144:9091"
+          ORGANIZATION_TABLE: "organizations"
+          APPTOKENS_TABLE: "apptokens"
+          BUCKET_NAME: "radon-repository"
+          REPOSITORY_TABLE: "repositories"
+      requirements:
+        - endpoint:
+            node: AwsS3Bucket_0
+            relationship: con_ConnectsTo_13
+            capability: storage_endpoint
+        - endpoint:
+            node: AwsDynamoDBTable_4
+            relationship: con_ConnectsTo_14
+            capability: database_endpoint
+        - endpoint:
+            node: AwsDynamoDBTable_2
+            relationship: con_ConnectsTo_15
+            capability: database_endpoint
+        - host:
+            node: AwsPlatform_0
+            relationship: con_HostedOn_17
+            capability: host
+      artifacts:
+        artifact_download_artifacts:
+          type: radon.artifacts.archive.Zip
+          file: /servicetemplates/PRQ.servicetemplates/cloudstash/files/AwsLambdaFunction_15/artifact_download_artifacts/e9f86f805f01c3dbf9575b8177ee74
+    AwsLambdaFunction_4:
+      type: radon.nodes.aws.AwsLambdaFunction
+      metadata:
+        x: "1205"
+        y: "472"
+        displayName: "create_repo"
+      properties:
+        handler: "create_repo.create_repository"
+        memory: 256
+        name: "create_repo"
+        runtime: "python3.6"
+        alias: "dev"
+        statement_id: "prq_statement"
+        zip_file: "f3d591ccae46fcd340a9ae7120dd3b"
+        timeout: 300
+        concurrency: 0
+        env_vars:
+          ARTIFACT_TABLE: "artifacts-dev"
+          USER_TABLE: "users"
+          PUSH_GATEWAY_HOST: "3.127.254.144:9091"
+          ORGANIZATION_TABLE: "organizations"
+          APPTOKENS_TABLE: "apptokens"
+          BUCKET_NAME: "radon-repository-testing"
+          REPOSITORY_TABLE: "repositories"
+      requirements:
+        - endpoint:
+            node: AwsDynamoDBTable_4
+            relationship: con_ConnectsTo_3
+            capability: database_endpoint
+        - endpoint:
+            node: AwsDynamoDBTable_5
+            relationship: con_ConnectsTo_4
+            capability: database_endpoint
+        - host:
+            node: AwsPlatform_0
+            relationship: con_HostedOn_2
+            capability: host
+      artifacts:
+        create_repo_artifacts:
+          type: radon.artifacts.archive.Zip
+          file: /servicetemplates/PRQ.servicetemplates/cloudstash/files/AwsLambdaFunction_4/create_repo_artifacts/f3d591ccae46fcd340a9ae7120dd3b
+    AwsLambdaFunction_9:
+      type: radon.nodes.aws.AwsLambdaFunction
+      metadata:
+        x: "713"
+        y: "498"
+        displayName: "list_organization"
+      properties:
+        handler: "list_organization.get_organizations"
+        memory: 256
+        name: "list_organization"
+        runtime: "python3.6"
+        alias: "dev"
+        statement_id: "prq_statement"
+        zip_file: "333e95fbbe61433e3f0dd629201d61"
+        timeout: 300
+        concurrency: 0
+        env_vars:
+          ARTIFACT_TABLE: "artifacts-dev"
+          USER_TABLE: "users"
+          PUSH_GATEWAY_HOST: "3.127.254.144:9091"
+          ORGANIZATION_TABLE: "organizations"
+          APPTOKENS_TABLE: "apptokens"
+          BUCKET_NAME: "radon-repository-testing"
+          REPOSITORY_TABLE: "repositories"
+      requirements:
+        - endpoint:
+            node: AwsDynamoDBTable_3
+            relationship: con_ConnectsTo_7
+            capability: database_endpoint
+        - host:
+            node: AwsPlatform_1
+            relationship: con_HostedOn_4
+            capability: host
+      artifacts:
+        list_organization_artifacts:
+          type: radon.artifacts.archive.Zip
+          file: /servicetemplates/PRQ.servicetemplates/cloudstash/files/AwsLambdaFunction_9/list_organization_artifacts/333e95fbbe61433e3f0dd629201d61
+    AwsLambdaFunction_10:
+      type: radon.nodes.aws.AwsLambdaFunction
+      metadata:
+        x: "1209"
+        y: "546"
+        displayName: "list_repo_private"
+      properties:
+        handler: "list_repo.get_repositories"
+        memory: 256
+        name: "list_repo_private"
+        runtime: "python3.6"
+        alias: "dev"
+        statement_id: "prq_statement"
+        zip_file: "5212e09fce126ebef2a6854f21b6c5"
+        timeout: 300
+        concurrency: 0
+        env_vars:
+          ARTIFACT_TABLE: "artifacts-dev"
+          USER_TABLE: "users"
+          PUSH_GATEWAY_HOST: "3.127.254.144:9091"
+          ORGANIZATION_TABLE: "organizations"
+          APPTOKENS_TABLE: "apptokens"
+          BUCKET_NAME: "radon-repository-testing"
+          REPOSITORY_TABLE: "repositories"
+      requirements:
+        - endpoint:
+            node: AwsDynamoDBTable_4
+            relationship: con_ConnectsTo_8
+            capability: database_endpoint
+        - host:
+            node: AwsPlatform_0
+            relationship: con_HostedOn_10
+            capability: host
+      artifacts:
+        list_repo_private_artifacts:
+          type: radon.artifacts.archive.Zip
+          file: /servicetemplates/PRQ.servicetemplates/cloudstash/files/AwsLambdaFunction_10/list_repo_private_artifacts/5212e09fce126ebef2a6854f21b6c5
+    AwsLambdaFunction_7:
+      type: radon.nodes.aws.AwsLambdaFunction
+      metadata:
+        x: "713"
+        y: "309"
+        displayName: "browser"
+      properties:
+        handler: "browser.browse"
+        memory: 256
+        name: "browser"
+        runtime: "python3.6"
+        alias: "dev"
+        statement_id: "prq_statement"
+        zip_file: "5a09bb6083115180ce6b9241fbb3ef"
+        timeout: 300
+        concurrency: 0
+        env_vars:
+          ARTIFACT_TABLE: "artifacts-dev"
+          USER_TABLE: "users"
+          PUSH_GATEWAY_HOST: "3.127.254.144:9091"
+          ORGANIZATION_TABLE: "organizations"
+          APPTOKENS_TABLE: "apptokens"
+          BUCKET_NAME: "radon-repository-testing"
+          REPOSITORY_TABLE: "repositories"
+      requirements:
+        - host:
+            node: AwsPlatform_1
+            relationship: con_HostedOn_11
+            capability: host
+      artifacts:
+        browser_artifacts:
+          type: radon.artifacts.archive.Zip
+          file: /servicetemplates/PRQ.servicetemplates/cloudstash/files/AwsLambdaFunction_7/browser_artifacts/5a09bb6083115180ce6b9241fbb3ef
+    AwsLambdaFunction_11:
+      type: radon.nodes.aws.AwsLambdaFunction
+      metadata:
+        x: "715"
+        y: "775"
+        displayName: "list_repo_public"
+      properties:
+        handler: "list_repo.get_public_repositories"
+        memory: 256
+        name: "list_repo_public"
+        runtime: "python3.6"
+        alias: "dev"
+        statement_id: "prq_statement"
+        zip_file: "18f3e6a887a0c01b78d3b76cced605"
+        timeout: 300
+        concurrency: 0
+        env_vars:
+          ARTIFACT_TABLE: "artifacts-dev"
+          USER_TABLE: "users"
+          PUSH_GATEWAY_HOST: "3.127.254.144:9091"
+          ORGANIZATION_TABLE: "organizations"
+          APPTOKENS_TABLE: "apptokens"
+          BUCKET_NAME: "radon-repository-testing"
+          REPOSITORY_TABLE: "repositories"
+      requirements:
+        - endpoint:
+            node: AwsDynamoDBTable_4
+            relationship: con_ConnectsTo_9
+            capability: database_endpoint
+        - host:
+            node: AwsPlatform_1
+            relationship: con_HostedOn_1
+            capability: host
+      artifacts:
+        list_repo_public_artifacts:
+          type: radon.artifacts.archive.Zip
+          file: /servicetemplates/PRQ.servicetemplates/cloudstash/files/AwsLambdaFunction_11/list_repo_public_artifacts/18f3e6a887a0c01b78d3b76cced605
+    AwsLambdaFunction_8:
+      type: radon.nodes.aws.AwsLambdaFunction
+      metadata:
+        x: "1208"
+        y: "144"
+        displayName: "list_artifact"
+      properties:
+        handler: "list_artifact.get_artifacts"
+        memory: 256
+        name: "list_artifact"
+        runtime: "python3.6"
+        alias: "dev"
+        statement_id: "prq_statement"
+        zip_file: "034e8483e1b4801f5100f6556cda1c"
+        timeout: 300
+        concurrency: 0
+        env_vars:
+          ARTIFACT_TABLE: "artifacts-dev"
+          USER_TABLE: "users"
+          PUSH_GATEWAY_HOST: "3.127.254.144:9091"
+          ORGANIZATION_TABLE: "organizations"
+          APPTOKENS_TABLE: "apptokens"
+          BUCKET_NAME: "radon-repository-testing"
+          REPOSITORY_TABLE: "repositories"
+      requirements:
+        - endpoint:
+            node: AwsDynamoDBTable_2
+            relationship: con_ConnectsTo_6
+            capability: database_endpoint
+        - host:
+            node: AwsPlatform_1
+            relationship: con_HostedOn_12
+            capability: host
+      artifacts:
+        list_artifact_artifacts:
+          type: radon.artifacts.archive.Zip
+          file: /servicetemplates/PRQ.servicetemplates/cloudstash/files/AwsLambdaFunction_8/list_artifact_artifacts/034e8483e1b4801f5100f6556cda1c
+    AwsApiGateway_0:
+      type: radon.nodes.aws.AwsApiGateway
+      metadata:
+        x: "915"
+        y: "1028"
+        displayName: "AwsApiGateway"
+      properties:
+        api_title: "Cloudstash_API"
+        api_description: "Api to serve Cloudstash.io"
+        api_version: "1.0.0"
+      requirements:
+        - host:
+            node: AwsPlatform_0
+            relationship: con_HostedOn_15
+            capability: host
+        - invoker:
+            node: AwsLambdaFunction_13
+            relationship: con_ApiGatewayTriggers_0
+            capability: invocable
+        - invoker:
+            node: AwsLambdaFunction_12
+            relationship: con_ApiGatewayTriggers_1
+            capability: invocable
+        - invoker:
+            node: AwsLambdaFunction_11
+            relationship: con_ApiGatewayTriggers_2
+            capability: invocable
+        - invoker:
+            node: AwsLambdaFunction_10
+            relationship: con_ApiGatewayTriggers_3
+            capability: invocable
+        - invoker:
+            node: AwsLambdaFunction_9
+            relationship: con_ApiGatewayTriggers_4
+            capability: invocable
+        - invoker:
+            node: AwsLambdaFunction_8
+            relationship: con_ApiGatewayTriggers_5
+            capability: invocable
+        - invoker:
+            node: AwsLambdaFunction_7
+            relationship: con_ApiGatewayTriggers_6
+            capability: invocable
+        - invoker:
+            node: AwsLambdaFunction_6
+            relationship: con_ApiGatewayTriggers_7
+            capability: invocable
+        - invoker:
+            node: AwsLambdaFunction_5
+            relationship: con_ApiGatewayTriggers_8
+            capability: invocable
+        - invoker:
+            node: AwsLambdaFunction_4
+            relationship: con_ApiGatewayTriggers_9
+            capability: invocable
+        - invoker:
+            node: AwsLambdaFunction_3
+            relationship: con_ApiGatewayTriggers_10
+            capability: invocable
+        - invoker:
+            node: AwsLambdaFunction_2
+            relationship: con_ApiGatewayTriggers_11
+            capability: invocable
+        - invoker:
+            node: AwsLambdaFunction_1
+            relationship: con_ApiGatewayTriggers_12
+            capability: invocable
+        - invoker:
+            node: AwsLambdaFunction_0
+            relationship: con_ApiGatewayTriggers_13
+            capability: invocable
+        - invoker:
+            node: AwsLambdaFunction_15
+            relationship: con_ApiGatewayTriggers_15
+            capability: invocable
+        - invoker:
+            node: AwsLambdaFunction_16
+            relationship: con_ApiGatewayTriggers_16
+            capability: invocable
+  relationship_templates:
+    con_ApiGatewayTriggers_16:
+      type: radon.relationships.aws.ApiGatewayTriggers
+      properties:
+        endpoint: "/apptoken/create"
+        http_methods: "POST"
+    con_ApiGatewayTriggers_15:
+      type: radon.relationships.aws.ApiGatewayTriggers
+      properties:
+        endpoint: "/artifact_download/{artifact_id}"
+        http_methods: "GET"
+    con_HostedOn_22:
+      type: tosca.relationships.HostedOn
+    con_HostedOn_20:
+      type: tosca.relationships.HostedOn
+    con_HostedOn_21:
+      type: tosca.relationships.HostedOn
+    con_HostedOn_19:
+      type: tosca.relationships.HostedOn
+    con_HostedOn_15:
+      type: tosca.relationships.HostedOn
+    con_HostedOn_16:
+      type: tosca.relationships.HostedOn
+    con_HostedOn_17:
+      type: tosca.relationships.HostedOn
+    con_HostedOn_18:
+      type: tosca.relationships.HostedOn
+    con_ConnectsTo_15:
+      type: radon.relationships.ConnectsTo
+    con_HostedOn_2:
+      type: tosca.relationships.HostedOn
+    con_ConnectsTo_16:
+      type: radon.relationships.ConnectsTo
+    con_HostedOn_3:
+      type: tosca.relationships.HostedOn
+    con_ConnectsTo_13:
+      type: radon.relationships.ConnectsTo
+    con_HostedOn_0:
+      type: tosca.relationships.HostedOn
+    con_HostedOn_1:
+      type: tosca.relationships.HostedOn
+    con_ConnectsTo_14:
+      type: radon.relationships.ConnectsTo
+    con_ConnectsTo_17:
+      type: radon.relationships.ConnectsTo
+    con_HostedOn_11:
+      type: tosca.relationships.HostedOn
+    con_HostedOn_12:
+      type: tosca.relationships.HostedOn
+    con_HostedOn_13:
+      type: tosca.relationships.HostedOn
+    con_HostedOn_8:
+      type: tosca.relationships.HostedOn
+    con_HostedOn_9:
+      type: tosca.relationships.HostedOn
+    con_HostedOn_14:
+      type: tosca.relationships.HostedOn
+    con_HostedOn_6:
+      type: tosca.relationships.HostedOn
+    con_HostedOn_7:
+      type: tosca.relationships.HostedOn
+    con_HostedOn_4:
+      type: tosca.relationships.HostedOn
+    con_HostedOn_10:
+      type: tosca.relationships.HostedOn
+    con_HostedOn_5:
+      type: tosca.relationships.HostedOn
+    con_ApiGatewayTriggers_13:
+      type: radon.relationships.aws.ApiGatewayTriggers
+      properties:
+        endpoint: "/artifact/{artifact_id}"
+        http_methods: "GET"
+    con_ApiGatewayTriggers_12:
+      type: radon.relationships.aws.ApiGatewayTriggers
+      properties:
+        endpoint: "/home"
+        http_methods: "GET"
+    con_ApiGatewayTriggers_11:
+      type: radon.relationships.aws.ApiGatewayTriggers
+      properties:
+        endpoint: "/organization/create"
+        http_methods: "POST"
+    con_ApiGatewayTriggers_10:
+      type: radon.relationships.aws.ApiGatewayTriggers
+      properties:
+        endpoint: "/login"
+        http_methods: "POST"
+    con_ApiGatewayTriggers_0:
+      type: radon.relationships.aws.ApiGatewayTriggers
+      properties:
+        endpoint: "/artifact"
+        http_methods: "POST"
+    con_ApiGatewayTriggers_4:
+      type: radon.relationships.aws.ApiGatewayTriggers
+      properties:
+        endpoint: "/organization/list"
+        http_methods: "GET"
+    con_ApiGatewayTriggers_3:
+      type: radon.relationships.aws.ApiGatewayTriggers
+      properties:
+        endpoint: "/repository"
+        http_methods: "GET"
+    con_ApiGatewayTriggers_2:
+      type: radon.relationships.aws.ApiGatewayTriggers
+      properties:
+        endpoint: "/publicrepository"
+        http_methods: "GET"
+    con_ApiGatewayTriggers_1:
+      type: radon.relationships.aws.ApiGatewayTriggers
+      properties:
+        endpoint: "/repository/{repo_id}/artifact/{group_id}/{artifact_name}"
+        http_methods: "GET"
+    con_ApiGatewayTriggers_8:
+      type: radon.relationships.aws.ApiGatewayTriggers
+      properties:
+        endpoint: "/logout"
+        http_methods: "GET"
+    con_ApiGatewayTriggers_7:
+      type: radon.relationships.aws.ApiGatewayTriggers
+      properties:
+        endpoint: "/signup"
+        http_methods: "POST"
+    con_ApiGatewayTriggers_6:
+      type: radon.relationships.aws.ApiGatewayTriggers
+      properties:
+        endpoint: "/"
+        http_methods: "GET"
+    con_ApiGatewayTriggers_5:
+      type: radon.relationships.aws.ApiGatewayTriggers
+      properties:
+        endpoint: "/repository/{repo_id}"
+        http_methods: "GET"
+    con_ConnectsTo_11:
+      type: radon.relationships.ConnectsTo
+    con_ConnectsTo_12:
+      type: radon.relationships.ConnectsTo
+    con_ConnectsTo_10:
+      type: radon.relationships.ConnectsTo
+    con_ApiGatewayTriggers_9:
+      type: radon.relationships.aws.ApiGatewayTriggers
+      properties:
+        endpoint: "/repository"
+        http_methods: "POST"
+    con_ConnectsTo_2:
+      type: radon.relationships.ConnectsTo
+    con_ConnectsTo_3:
+      type: radon.relationships.ConnectsTo
+    con_ConnectsTo_4:
+      type: radon.relationships.ConnectsTo
+    con_ConnectsTo_5:
+      type: radon.relationships.ConnectsTo
+    con_ConnectsTo_0:
+      type: radon.relationships.ConnectsTo
+    con_ConnectsTo_1:
+      type: radon.relationships.ConnectsTo
+    con_ConnectsTo_6:
+      type: radon.relationships.ConnectsTo
+    con_ConnectsTo_7:
+      type: radon.relationships.ConnectsTo
+    con_ConnectsTo_8:
+      type: radon.relationships.ConnectsTo
+    con_ConnectsTo_9:
+      type: radon.relationships.ConnectsTo
+  policies:
+    - HTTP_endpointTest_policy:
+        type: radon.policies.testing.HttpEndpointTest
+        properties:
+          path: "/"
+          hostname: "cloudstash.io"
+          method: "GET"
+          port: "443"
+          expected_status: "200"
+          ti_blueprint: "radon.blueprints.testing.DeploymentTestAgentEC2"
+          use_https: "true"
+          test_id: "endpointTest_1"
+        targets: [ AwsApiGateway_0 ]

@@ -1,0 +1,65 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+
+imports:
+  - file: radonnodesabstract__CloudPlatform.tosca
+    namespace_uri: radon.nodes.abstract
+    namespace_prefix: radonnodesabstract
+  - file: radonartifacts__Ansible.tosca
+    namespace_uri: radon.artifacts
+    namespace_prefix: radonartifacts
+  - file: radonnodesaws__AwsLambdaFunctionFromS3.tosca
+    namespace_uri: radon.nodes.aws
+    namespace_prefix: radonnodesaws
+  - file: radonnodesaws__AwsS3Bucket.tosca
+    namespace_uri: radon.nodes.aws
+    namespace_prefix: radonnodesaws
+  - file: radonnodesaws__AwsApiGateway.tosca
+    namespace_uri: radon.nodes.aws
+    namespace_prefix: radonnodesaws
+  - file: radonnodesaws__AwsLambdaFunction.tosca
+    namespace_uri: radon.nodes.aws
+    namespace_prefix: radonnodesaws
+  - file: radonnodesVM__EC2.tosca
+    namespace_uri: radon.nodes.VM
+    namespace_prefix: radonnodesVM
+  - file: radonnodesaws__AwsDynamoDBTable.tosca
+    namespace_uri: radon.nodes.aws
+    namespace_prefix: radonnodesaws
+node_types:
+  radon.nodes.aws.AwsPlatform:
+    derived_from: radon.nodes.abstract.CloudPlatform
+    metadata:
+      targetNamespace: "radon.nodes.aws"
+      abstract: "false"
+      final: "false"
+    attributes:
+      role_arn:
+        description: AWS role arn identifier
+        type: string
+    properties:
+      name:
+        type: string
+        default: "AWS"
+      region:
+        type: string
+    capabilities:
+      host:
+        occurrences: [ 1, UNBOUNDED ]
+        valid_source_types: [ radon.nodes.aws.AwsLambdaFunction, radon.nodes.aws.AwsS3Bucket, radon.nodes.VM.EC2, radon.nodes.aws.AwsApiGateway, radon.nodes.aws.AwsDynamoDBTable, radon.nodes.aws.AwsLambdaFunctionFromS3 ]
+        type: tosca.capabilities.Container
+    interfaces:
+      Standard:
+        type: tosca.interfaces.node.lifecycle.Standard
+        operations:
+          configure:
+            implementation:
+              primary: /nodetypes/radon.nodes.aws/AwsPlatform/files/configure/configure.yml
+              dependencies: [ /nodetypes/radon.nodes.aws/AwsPlatform/files/policy/policy.json ]
+              timeout: 0
+    artifacts:
+      configure:
+        type: radon.artifacts.Ansible
+        file: /nodetypes/radon.nodes.aws/AwsPlatform/files/configure/configure.yml
+      policy:
+        type: tosca.artifacts.File
+        file: /nodetypes/radon.nodes.aws/AwsPlatform/files/policy/policy.json

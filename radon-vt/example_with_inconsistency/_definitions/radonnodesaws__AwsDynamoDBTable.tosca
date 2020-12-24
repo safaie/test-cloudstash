@@ -1,0 +1,110 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+
+imports:
+  - file: radonartifacts__Ansible.tosca
+    namespace_uri: radon.artifacts
+    namespace_prefix: radonartifacts
+  - file: radonnodesaws__AwsPlatform.tosca
+    namespace_uri: radon.nodes.aws
+    namespace_prefix: radonnodesaws
+  - file: radoncapabilities__Invocable.tosca
+    namespace_uri: radon.capabilities
+    namespace_prefix: radoncapabilities
+  - file: radonnodesaws__AwsLambdaFunction.tosca
+    namespace_uri: radon.nodes.aws
+    namespace_prefix: radonnodesaws
+  - file: radonrelationshipsaws__AwsTriggers.tosca
+    namespace_uri: radon.relationships.aws
+    namespace_prefix: radonrelationshipsaws
+node_types:
+  radon.nodes.aws.AwsDynamoDBTable:
+    derived_from: tosca.nodes.Database
+    metadata:
+      targetNamespace: "radon.nodes.aws"
+      abstract: "false"
+      final: "false"
+    properties:
+      hash_key_name:
+        type: string
+        description: The name of the hash key
+        required: false
+      range_key_name:
+        type: string
+        description: The name of the range key
+        required: false
+      read_capacity:
+        type: integer
+        description: Read throughput capacity (units) to provision
+        required: false
+        default: 1
+      range_key_type:
+        type: string
+        description: The type of the range key {STRING, NUMBER, BINARY}
+        required: false
+      write_capacity:
+        type: integer
+        description: Write throughput capacity (units) to provision
+        required: false
+        default: 1
+      hash_key_type:
+        type: string
+        description: The type of the hash key {STRING, NUMBER, BINARY}
+        required: false
+      table_name:
+        type: string
+        description: The name of the AWS DynamoDB table
+    requirements:
+      - host:
+          capability: tosca.capabilities.Container
+          node: radon.nodes.aws.AwsPlatform
+          relationship: tosca.relationships.HostedOn
+          occurrences: [ 1, 1 ]
+      - invoker:
+          capability: radon.capabilities.Invocable
+          node: radon.nodes.aws.AwsLambdaFunction
+          relationship: radon.relationships.aws.AwsTriggers
+          occurrences: [ 0, UNBOUNDED ]
+    interfaces:
+      Standard:
+        type: tosca.interfaces.node.lifecycle.Standard
+        inputs:
+          hash_key_name:
+            type: string
+            required: true
+            default: { get_property: [ SELF, hash_key_name ] }
+          read_capacity:
+            type: string
+            required: true
+            default: { get_property: [ SELF, read_capacity ] }
+          aws_region:
+            type: string
+            required: true
+            default: { get_property: [ SELF, host, region ] }
+          write_capacity:
+            type: string
+            required: true
+            default: { get_property: [ SELF, write_capacity ] }
+          hash_key_type:
+            type: string
+            required: true
+            default: { get_property: [ SELF, hash_key_type ] }
+          table_name:
+            type: string
+            required: true
+            default: { get_property: [ SELF, table_name ] }
+        operations:
+          create:
+            implementation:
+              primary: /nodetypes/radon.nodes.aws/AwsDynamoDBTable/files/create/create.yml
+              timeout: 0
+          delete:
+            implementation:
+              primary: /nodetypes/radon.nodes.aws/AwsDynamoDBTable/files/delete/delete.yml
+              timeout: 0
+    artifacts:
+      create:
+        type: radon.artifacts.Ansible
+        file: /nodetypes/radon.nodes.aws/AwsDynamoDBTable/files/create/create.yml
+      delete:
+        type: radon.artifacts.Ansible
+        file: /nodetypes/radon.nodes.aws/AwsDynamoDBTable/files/delete/delete.yml
