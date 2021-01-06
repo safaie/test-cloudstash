@@ -3,33 +3,26 @@ version: 2.1
 jobs:
   install_dependencies:
     steps:
-      - run:
-        command: sh 'echo install dependencies'
+      - run: echo "install dependencies"
   run_VT:
     steps:
-      - run:
-        command: sh 'echo run VT'
+      - run: echo "run VT"
   run_DPT:
     steps:
-      - run:
-        command: sh 'echo run DPT'
+      - run: echo "run DPT"
   run_CTT:
     steps:
-      - run:
-        command: sh 'echo run CTT'
+      - run: echo "run CTT"
   fetch_blueprint_from_TL:
     steps:
-      - run:
-        command: sh 'fetch blueprint from TL'
+      - run: echo "fetch blueprint from TL"
   opera_deploy:
     steps:
-      - run:
-        command: sh 'opera deploy'
+      - run: echo "opera deploy"
   cleanup:
     steps:
-      - run:
+      - run: echo "cleaning up the workspace"
         when: always
-        command: sh 'cleaning up the workspace'
     
 workflows:
   cloudstash:
