@@ -5,7 +5,7 @@ executors:
     docker:
       - image: circleci/python:3.8
         auth:
-          username: mydockerhub-user
+          username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
 
 jobs:
