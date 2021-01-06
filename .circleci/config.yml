@@ -1,27 +1,43 @@
 version: 2.1
 
+executors:
+  docker-executor:
+    docker:
+      - image: circleci/python:3.8
+        auth:
+          username: mydockerhub-user
+          password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
+
 jobs:
   install_dependencies:
+    executor: docker-executor
     steps:
       - run: echo "install dependencies"
   run_VT:
+    executor: docker-executor
     steps:
       - run: echo "run VT"
   run_DPT:
+    executor: docker-executor
     steps:
       - run: echo "run DPT"
   run_CTT:
+    executor: docker-executor
     steps:
       - run: echo "run CTT"
   fetch_blueprint_from_TL:
+    executor: docker-executor
     steps:
       - run: echo "fetch blueprint from TL"
   opera_deploy:
+    executor: docker-executor
     steps:
       - run: echo "opera deploy"
   cleanup:
+    executor: docker-executor
     steps:
-      - run: echo "cleaning up the workspace"
+      - run: 
+        command: echo "cleaning up the workspace"
         when: always
     
 workflows:
