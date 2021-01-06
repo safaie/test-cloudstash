@@ -12,11 +12,17 @@ jobs:
   install_dependencies:
     executor: docker-executor
     steps:
-      - run: echo "install dependencies"
+      - run: echo "install any dependencies.."
   run_VT:
     executor: docker-executor
     steps:
-      - run: echo "run VT"
+      - run: 
+          command: echo "run VT"
+          environment:
+            DEPLOY_FILE: $DEPLOY_FILE
+            VT_DOCKER_NAME: $VT_DOCKER_NAME
+            VT_DOCKER_IMAGE: $VT_DOCKER_IMAGE
+            VT_FILES_PATH: $VT_FILES_PATH
   run_DPT:
     executor: docker-executor
     steps:
