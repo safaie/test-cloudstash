@@ -37,8 +37,8 @@ jobs:
     executor: docker-executor
     steps:
       - run: 
-        command: echo "cleaning up the workspace"
-        when: always
+          command: echo "cleaning up the workspace"
+          when: always
     
 workflows:
   cloudstash:
