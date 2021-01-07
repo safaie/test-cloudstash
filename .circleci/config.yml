@@ -24,7 +24,7 @@ jobs:
           environment:
             DEPLOY_FILE: $DEPLOY_FILE
             VT_DOCKER_NAME: $VT_DOCKER_NAME
-            VT_DOCKER_IMAGE: << marklawimperial/verification-tool >>
+            VT_DOCKER_IMAGE: "marklawimperial/verification-tool"
             VT_FILES_PATH: $VT_FILES_PATH
           command: |
             echo "run VT" 
