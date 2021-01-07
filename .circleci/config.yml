@@ -23,7 +23,10 @@ jobs:
             VT_DOCKER_NAME: $VT_DOCKER_NAME
             VT_DOCKER_IMAGE: $VT_DOCKER_IMAGE
             VT_FILES_PATH: $VT_FILES_PATH
-          command: echo "run VT" && cat Jenkinsfile
+          command: |
+            echo "run VT" \
+            echo \            
+            cat Jenkinsfile
   run_DPT:
     executor: docker-executor
     steps:
