@@ -26,7 +26,7 @@ jobs:
           command: |
             echo "run VT" 
             echo "" 
-            sh 'docker pull $VT_DOCKER_IMAGE'
+            docker pull $VT_DOCKER_IMAGE
   run_DPT:
     executor: docker-executor
     steps:
