@@ -7,6 +7,9 @@ executors:
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
+  machine-executor:
+    machine:
+      - image: ubuntu-2004:202010-01    
 
 jobs:
   install_dependencies:
@@ -14,7 +17,7 @@ jobs:
     steps:
       - run: echo "install any dependencies.."
   run_VT:
-    executor: docker-executor
+    executor: machine-executor
     steps:
       - checkout
       - run: 
