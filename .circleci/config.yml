@@ -16,13 +16,14 @@ jobs:
   run_VT:
     executor: docker-executor
     steps:
+      - checkout
       - run: 
-          command: echo "run VT"
           environment:
             DEPLOY_FILE: $DEPLOY_FILE
             VT_DOCKER_NAME: $VT_DOCKER_NAME
             VT_DOCKER_IMAGE: $VT_DOCKER_IMAGE
             VT_FILES_PATH: $VT_FILES_PATH
+          command: echo "run VT" && cat Jenkinsfile
   run_DPT:
     executor: docker-executor
     steps:
