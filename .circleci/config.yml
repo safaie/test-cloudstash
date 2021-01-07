@@ -25,11 +25,11 @@ jobs:
             DEPLOY_FILE: $DEPLOY_FILE
             VT_DOCKER_NAME: $VT_DOCKER_NAME
             VT_DOCKER_IMAGE: $VT_DOCKER_IMAGE
-            VT_FILES_PATH: $VT_FILES_PATH
+            VT_FILES_PATH: "$VT_FILES_PATH"
           command: |
             echo "run VT" 
             echo "" 
-            docker pull "$VT_DOCKER_IMAGE"
+            docker pull $VT_DOCKER_IMAGE
   run_DPT:
     executor: docker-executor
     steps:
