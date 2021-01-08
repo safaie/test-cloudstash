@@ -22,13 +22,12 @@ jobs:
       - checkout
       - run: 
           environment:
-            DEPLOY_FILE: $DEPLOY_FILE
-            VT_DOCKER_NAME: $VT_DOCKER_NAME
+            DEPLOY_FILE: "cloudstash.csar"
+            VT_DOCKER_NAME: "RadonVT"
             VT_DOCKER_IMAGE: "marklawimperial/verification-tool"
-            VT_FILES_PATH: $VT_FILES_PATH
+            VT_FILES_PATH: '{"path":"/tmp/main.cdl"}'
           command: |
-            echo "run VT" 
-            echo "" 
+            # Pull the latest image of VT
             docker pull ${VT_DOCKER_IMAGE}
   run_DPT:
     executor: docker-executor
