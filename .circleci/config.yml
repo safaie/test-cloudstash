@@ -29,6 +29,13 @@ jobs:
           command: |
             # Pull the latest image of VT
             docker pull ${VT_DOCKER_IMAGE}
+            # Unzip the csar
+            unzip ${DEPLOY_FILE}
+            # Move relevant files to temp folder.
+            mkdir -p tmp/radon-vt && cp -r _definitions tmp/radon-vt/_definitions && cp radon-vt/main.cdl tmp/radon-vt
+            # Run Verification Tool as Docker image and open port 5000
+            echo ${PWD}
+            #            docker run --name ${VT_DOCKER_NAME} --rm -d -p 5000:5000 -v ${PWD}/tmp/radon-vt:/tmp ${VT_DOCKER_IMAGE}
   run_DPT:
     executor: docker-executor
     steps:
