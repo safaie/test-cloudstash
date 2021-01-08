@@ -64,9 +64,9 @@ jobs:
     steps:
       - run:
           environment:
-            DEPLOY_FILE = "cloudstash.csar"
-            DPT_DOCKER_IMAGE = "radonconsortium/radon-dp"
-            GITHUB_REPO = "safaie/test-cloudstash"
+            DEPLOY_FILE: "cloudstash.csar"
+            DPT_DOCKER_IMAGE: "radonconsortium/radon-dp"
+            GITHUB_REPO: "safaie/test-cloudstash"
           command: |
             # Pull radonconsortium/radon-dp:latest image from Dockerhub
             echo "Pull radonconsortium/radon-dp:latest image from Dockerhub"
