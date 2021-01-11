@@ -94,13 +94,30 @@ jobs:
             cat tmp/radon-dp-volume/radondp_predictions.json
             echo ""
   run_CTT:
-    executor: docker-executor
+    executor: machine-executor
     steps:
-      - run: echo "run CTT"
+      - checkout
+      - run: 
+          environment:
+            CTT_DOCKER_NAME: "RadonCTT"
+            CTT_DOCKER_IMAGE: "radonconsortium/radon-ctt:latest"
+            CTT_CONFIG_FILE_PATH: "radon-ctt-cli-testing/ctt_config.yaml"
+            CTT_SERVER_URL: "http://localhost:18080/RadonCTT"
+          command: |
+            echo "run CTT"
   fetch_blueprint_from_TL:
-    executor: docker-executor
+    executor: machine-executor
     steps:
-      - run: echo "fetch blueprint from TL"
+      - checkout
+      - run: 
+          environment:
+            template-lib-user: $TEMPLATE_LIBRARY_USER
+            template-lib-pass: $TEMPLATE_LIBRARY_PASS
+            csar_reference: "thumbnail-generation"
+            csar_version: "1.0.0"
+          command: |
+            echo ${csar_reference}
+            echo ${csar_version}
   opera_deploy:
     executor: docker-executor
     steps:
