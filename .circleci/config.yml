@@ -115,11 +115,10 @@ jobs:
             template-lib-pass: $TEMPLATE_LIBRARY_PASS
             csar_reference: "thumbnail-generation"
             csar_version: "1.0.0"
-            BEARER_TOKEN: $(curl -X POST https://template-library-radon.xlab.si/api/auth/login -H "accept\: */*" -H "Content-Type: application/json" -d "{\"username\":\"$template-lib-user\",\"password\":\"$template-lib-pass\"}" | python3 -c "import sys, json; print(json.load(sys.stdin)['token'])")
           command: |
             echo ${csar_reference}
             echo ${csar_version}
-            echo ${BEARER_TOKEN}
+            sh BEARER_TOKEN=$(curl -X POST https://template-library-radon.xlab.si/api/auth/login -H "accept: */*" -H "Content-Type: application/json" -d "{\"username\":\"$template-lib-user\",\"password\":\"$template-lib-pass\"}" | python3 -c "import sys, json; print(json.load(sys.stdin)['token'])")
             #curl -X GET https://template-library-radon.xlab.si/api/templates/${csar_reference}/versions/${csar_version}/files -H "accept: application/octet-stream" -H "Authorization: Bearer ${BEARER_TOKEN}" --output blueprint
   opera_deploy:
     executor: docker-executor
