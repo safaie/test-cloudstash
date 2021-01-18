@@ -130,6 +130,7 @@ jobs:
       - run: 
           command: |
             echo "opera deploy"
+            ls -al blueprint
   cleanup:
     executor: docker-executor
     steps:
