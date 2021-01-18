@@ -116,11 +116,8 @@ jobs:
           command: |
             echo ${csar_reference}
             echo ${csar_version}
-            # token definition and usage should be defined here.
-            # BEARER_TOKEN=$(curl -X POST https://template-library-radon.xlab.si/api/auth/login -H "accept: */*" -H "Content-Type: application/json" -d "{\"username\":\"$TEMPLATE_LIBRARY_USER\",\"password\":\"$TEMPLATE_LIBRARY_PASS\"}" | python3 -c "import sys, json; print(json.load(sys.stdin)['token'])")
-            # curl -X GET https://template-library-radon.xlab.si/api/templates/$csar_reference/versions/$csar_version/files -H "accept: application/octet-stream" -H "Authorization: Bearer $BEARER_TOKEN" --output blueprint
             BEARER_TOKEN="$(curl -X POST https://template-library-radon.xlab.si/api/auth/login -H "accept: */*" -H "Content-Type: application/json" -d "{\"username\":\"$TEMPLATE_LIBRARY_USER\",\"password\":\"$TEMPLATE_LIBRARY_PASS\"}" | python3 -c "import sys, json; print(json.load(sys.stdin)['token'])")"
-            echo $BEARER_TOKEN
+            curl -X GET https://template-library-radon.xlab.si/api/templates/$csar_reference/versions/$csar_version/files -H "accept: application/octet-stream" -H "Authorization: Bearer $BEARER_TOKEN" --output blueprint
   opera_deploy:
     executor: docker-executor
     steps:
