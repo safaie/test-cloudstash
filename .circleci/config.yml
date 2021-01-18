@@ -128,9 +128,10 @@ jobs:
       - attach_workspace:
           at: .
       - run: 
+          environment:
+            DEPLOY_FILE: "blueprint"
           command: |
-            echo "opera deploy"
-            ls -al blueprint
+            ls -al ${DEPLOY_FILE}
   cleanup:
     executor: docker-executor
     steps:
