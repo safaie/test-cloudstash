@@ -131,7 +131,15 @@ jobs:
           environment:
             DEPLOY_FILE: "blueprint"
           command: |
+            ##
             ls -al ${DEPLOY_FILE}
+            pip3 install opera==0.6.2 --user
+            PATH="$(python3 -m site --user-base)/bin:${PATH}"
+            ##
+            echo $PATH
+            pip3 list
+            opera init ${DEPLOY_FILE}
+            opera deploy
   cleanup:
     executor: docker-executor
     steps:
