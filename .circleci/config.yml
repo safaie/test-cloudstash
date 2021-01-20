@@ -111,7 +111,7 @@ jobs:
             echo ""
             # Run CTT server using docker
             echo "Run CTT server using docker"
-            docker run -d --rm  --name ${CTT_DOCKER_NAME} -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY -e "CTT_FAAS_ENABLED=1" -e "OPERA_SSH_USER=ubuntu" -e "OPERA_SSH_IDENTITY_FILE=/tmp/aws-ec2" -p 18080:18080 -v ${PWD}/project/tmp/awsec2.pem:/tmp/aws-ec2 ${CTT_DOCKER_IMAGE}
+            docker run -d --rm  --name ${CTT_DOCKER_NAME} -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY -e "CTT_FAAS_ENABLED=1" -e "OPERA_SSH_USER=ubuntu" -e "OPERA_SSH_IDENTITY_FILE=/tmp/aws-ec2" -p 18080:18080 -v tmp/awsec2.pem:/tmp/aws-ec2 ${CTT_DOCKER_IMAGE}
             echo ""
             # Clone the radon-ctt-cli repo, install the requirements, execute the test and print the results
             echo "Clone the radon-ctt-cli repo, install the requirements, execute the test and print the results"
