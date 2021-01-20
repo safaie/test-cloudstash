@@ -118,10 +118,22 @@ jobs:
             git clone https://github.com/radon-h2020/radon-ctt-cli.git
             python3 -m venv .venv
             . .venv/bin/activate
+            echo ""
+            echo "install the requirements"
             pip install -r radon-ctt-cli/requirements.txt
+            echo ""
+            echo ${CTT_SERVER_URL}
+            echo ${CTT_CONFIG_FILE_PATH}
+            echo ""
+            echo "running ctt_cli.py"
             python radon-ctt-cli/ctt_cli.py -u ${CTT_SERVER_URL} -c ${CTT_CONFIG_FILE_PATH}
+            echo ""
+            echo "unzip /tmp/results.zip"
             unzip /tmp/results.zip
+            echo ""
+            echo "execute execution.json"
             cat execution.json
+            echo ""
             # Stop docker container
             echo "Stop docker container"
             docker stop ${CTT_DOCKER_NAME}
