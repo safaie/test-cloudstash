@@ -23,6 +23,7 @@ jobs:
             VT_DOCKER_NAME: "RadonVT"
             VT_DOCKER_IMAGE: "marklawimperial/verification-tool"
             VT_FILES_PATH: '{"path":"/tmp/main.cdl"}'
+          name: Run VT  
           command: |
             echo "Pull the latest image of VT"
             docker pull ${VT_DOCKER_IMAGE}
@@ -57,6 +58,7 @@ jobs:
             DEPLOY_FILE: "cloudstash.csar"
             DPT_DOCKER_IMAGE: "radonconsortium/radon-dp"
             GITHUB_REPO: "safaie/test-cloudstash"
+          name: Run DPT  
           command: |
             echo "Pull radonconsortium/radon-dp:latest image from Dockerhub"
             docker pull ${DPT_DOCKER_IMAGE}
@@ -86,6 +88,7 @@ jobs:
             CTT_DOCKER_IMAGE: "radonconsortium/radon-ctt:latest"
             CTT_CONFIG_FILE_PATH: "radon-ctt-cli-testing/ctt_config.yaml"
             CTT_SERVER_URL: "http://localhost:18080/RadonCTT"
+          name: Run CTT  
           command: |
             echo "Initialize an empty file & copy the SSH key"
             mkdir -p tmp && touch tmp/awsec2.pem && echo $PRQ_AWS_SSH_KEY > tmp/awsec2.pem
@@ -125,6 +128,7 @@ jobs:
             csar_reference: "thumbnail-generation"
             # The version used to store a blueprint in Template Library.
             csar_version: "1.0.0"
+          name: Fetch blueprint from TL  
           command: |
             echo ${csar_reference}
             echo ${csar_version}
@@ -146,6 +150,7 @@ jobs:
           environment:
             # The file previously downloaded from Template Library
             DEPLOY_FILE: "blueprint"
+          name: Opera deploy  
           command: |
             echo "install the necessary dependencies as pip packages"
             pip3 install opera==0.6.2 --user
