@@ -168,12 +168,13 @@ workflows:
   cloudstash:
     jobs:
       - run_VT
-      - run_DPT:
-          requires:
-            - run_VT
+#      - run_DPT:
+#          requires:
+#            - run_VT
       - run_CTT:
           requires:
-            - run_DPT
+#            - run_DPT
+            - run_VT
       - fetch_blueprint_from_TL:
           requires:
             - run_CTT
