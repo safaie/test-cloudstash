@@ -45,10 +45,15 @@ jobs:
             echo "Stop the container"
             docker stop ${VT_DOCKER_NAME}
             echo ""
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
   run_DPT:
     executor: machine-executor
     steps:
-      - checkout
+      - attach_workspace:
+          at: .
       - run:
           environment:
             DEPLOY_FILE: "cloudstash.csar"
@@ -74,10 +79,15 @@ jobs:
             echo "Results are available at:"
             cat tmp/radon-dp-volume/radondp_predictions.json
             echo ""
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
   run_CTT:
     executor: machine-executor
     steps:
-      - checkout
+      - attach_workspace:
+          at: .
       - run: 
           environment:
             CTT_DOCKER_NAME: "RadonCTT"
@@ -87,12 +97,12 @@ jobs:
           name: Run CTT  
           command: |
             echo "Initialize an empty file & copy the SSH key"
-            mkdir -p tmp && touch tmp/awsec2.pem && echo $ALEX_PRQ_AWS_SSH_KEY > tmp/awsec2.pem
+            mkdir -p tmp && touch tmp/awsec2.pem && echo $PRQ_AWS_SSH_KEY > tmp/awsec2.pem
             echo "Pull the latest version of the CTT docker Image"
             docker pull ${CTT_DOCKER_IMAGE}
             echo ""
             echo "Run CTT server using docker"
-            docker run -d --rm  --name ${CTT_DOCKER_NAME} -e AWS_ACCESS_KEY_ID=$ALEX_AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$ALEX_AWS_SECRET_ACCESS_KEY -e "CTT_FAAS_ENABLED=1" -e "OPERA_SSH_USER=ubuntu" -e "OPERA_SSH_IDENTITY_FILE=/tmp/aws-ec2" -p 18080:18080 -v ${PWD}/tmp/awsec2.pem:/tmp/aws-ec2 ${CTT_DOCKER_IMAGE}
+            docker run -d --rm  --name ${CTT_DOCKER_NAME} -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY -e "CTT_FAAS_ENABLED=1" -e "OPERA_SSH_USER=ubuntu" -e "OPERA_SSH_IDENTITY_FILE=/tmp/aws-ec2" -p 18080:18080 -v ${PWD}/tmp/awsec2.pem:/tmp/aws-ec2 ${CTT_DOCKER_IMAGE}
             echo ""
             echo "Clone the radon-ctt-cli repo"
             git clone https://github.com/radon-h2020/radon-ctt-cli.git
@@ -113,10 +123,15 @@ jobs:
             echo ""
             echo "Stop docker container"
             docker stop ${CTT_DOCKER_NAME}
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
   fetch_blueprint_from_TL:
     executor: machine-executor
     steps:
-      - checkout
+      - attach_workspace:
+          at: .
       - run: 
           environment:
             # Template Library credentials are stored in CircleCI
@@ -157,30 +172,20 @@ jobs:
             opera init ${DEPLOY_FILE}
             opera deploy
             echo ""
-  cleanup:
-    executor: docker-executor
-    steps:
-      - run: 
-          command: echo "cleaning up the workspace"
-          when: always
     
 workflows:
   cloudstash:
     jobs:
       - run_VT
-#      - run_DPT:
-#          requires:
-#            - run_VT
+      - run_DPT:
+          requires:
+            - run_VT
       - run_CTT:
           requires:
-#            - run_DPT
-            - run_VT
+            - run_DPT
       - fetch_blueprint_from_TL:
           requires:
             - run_CTT
       - opera_deploy:
           requires:
             - fetch_blueprint_from_TL
-      - cleanup:
-          requires:
-            - opera_deploy
