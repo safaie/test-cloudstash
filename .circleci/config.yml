@@ -171,17 +171,16 @@ jobs:
 workflows:
   cloudstash:
     jobs:
-#      - install_dependencies
-#      - run_VT:
-#          requires:
-#            - install_dependencies
-#      - run_DPT:
-#          requires:
-#            - run_VT
-#      - run_CTT:
-      - run_CTT
-#          requires:
-#            - run_DPT
+      - install_dependencies
+      - run_VT:
+          requires:
+            - install_dependencies
+      - run_DPT:
+          requires:
+            - run_VT
+      - run_CTT:
+          requires:
+            - run_DPT
       - fetch_blueprint_from_TL:
           requires:
             - run_CTT
