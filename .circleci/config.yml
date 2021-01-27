@@ -87,12 +87,12 @@ jobs:
           name: Run CTT  
           command: |
             echo "Initialize an empty file & copy the SSH key"
-            mkdir -p tmp && touch tmp/awsec2.pem && echo $PRQ_AWS_SSH_KEY > tmp/awsec2.pem
+            mkdir -p tmp && touch tmp/awsec2.pem && echo $ALEX_PRQ_AWS_SSH_KEY > tmp/awsec2.pem
             echo "Pull the latest version of the CTT docker Image"
             docker pull ${CTT_DOCKER_IMAGE}
             echo ""
             echo "Run CTT server using docker"
-            docker run -d --rm  --name ${CTT_DOCKER_NAME} -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY -e "CTT_FAAS_ENABLED=1" -e "OPERA_SSH_USER=ubuntu" -e "OPERA_SSH_IDENTITY_FILE=/tmp/aws-ec2" -p 18080:18080 -v ${PWD}/tmp/awsec2.pem:/tmp/aws-ec2 ${CTT_DOCKER_IMAGE}
+            docker run -d --rm  --name ${CTT_DOCKER_NAME} -e AWS_ACCESS_KEY_ID=$ALEX_AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$ALEX_AWS_SECRET_ACCESS_KEY -e "CTT_FAAS_ENABLED=1" -e "OPERA_SSH_USER=ubuntu" -e "OPERA_SSH_IDENTITY_FILE=/tmp/aws-ec2" -p 18080:18080 -v ${PWD}/tmp/awsec2.pem:/tmp/aws-ec2 ${CTT_DOCKER_IMAGE}
             echo ""
             echo "Clone the radon-ctt-cli repo"
             git clone https://github.com/radon-h2020/radon-ctt-cli.git
