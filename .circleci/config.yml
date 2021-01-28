@@ -136,7 +136,8 @@ jobs:
           environment:
             # Template Library credentials are stored in CircleCI
             # The reference name used to store a blueprint in Template Library.
-            csar_reference: "thumbnail-generation"
+            #            csar_reference: "thumbnail-generation"
+            csar_reference: "sls"
             # The version used to store a blueprint in Template Library.
             csar_version: "1.0.0"
           name: Fetch blueprint from TL  
