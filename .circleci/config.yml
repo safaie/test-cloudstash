@@ -99,7 +99,7 @@ jobs:
             echo "Initialize an empty file & copy the SSH key"
             mkdir -p tmp && touch tmp/awsec2.pem && echo $PRQ_AWS_SSH_KEY > tmp/awsec2.pem
             echo ""
-            echo tmp/awsec2.pem
+            cat tmp/awsec2.pem
             echo ""
             echo "Pull the latest version of the CTT docker Image"
             docker pull ${CTT_DOCKER_IMAGE}
