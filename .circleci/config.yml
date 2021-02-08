@@ -182,13 +182,12 @@ workflows:
       - run_DPT:
           requires:
             - run_VT
-#      - run_CTT:
-#          requires:
-#            - run_DPT
+      - run_CTT:
+          requires:
+            - run_DPT
       - fetch_blueprint_from_TL:
           requires:
-#            - run_CTT
-            - run_DPT
+            - run_CTT
       - opera_deploy:
           requires:
             - fetch_blueprint_from_TL
