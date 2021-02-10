@@ -6,7 +6,8 @@ executors:
       - image: circleci/python:3.8
   machine-executor:
     machine:
-      image: ubuntu-2004:202101-01
+#      image: ubuntu-2004:202101-01
+      image: ubuntu-1604:202101-01
 
 jobs:
   run_VT:
