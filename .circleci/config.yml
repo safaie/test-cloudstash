@@ -112,7 +112,11 @@ jobs:
             . .venv/bin/activate
             echo ""
             echo "install the requirements"
-            pip install -r radon-ctt-cli/requirements.txt
+#            pip install -r radon-ctt-cli/requirements.txt
+            pip3 install -r radon-ctt-cli/requirements.txt
+            echo ""
+            echo ${CTT_SERVER_URL}
+            echo ${CTT_CONFIG_FILE_PATH}
             echo ""
             echo "running ctt_cli.py, execute the test and print the results"
             python radon-ctt-cli/ctt_cli.py -u ${CTT_SERVER_URL} -c ${CTT_CONFIG_FILE_PATH}
