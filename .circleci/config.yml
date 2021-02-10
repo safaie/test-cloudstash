@@ -97,6 +97,9 @@ jobs:
             CTT_SERVER_URL: "http://localhost:18080/RadonCTT"
           name: Run CTT  
           command: |
+            sudo apt-get install python3-apt -y
+            alias python="python3"
+            alias pip="pip3"
             echo "Initialize an empty file & copy the SSH key"
             mkdir -p tmp && touch tmp/awsec2.pem && echo $PRQ_AWS_SSH_KEY > tmp/awsec2.pem
             echo ""
@@ -112,15 +115,10 @@ jobs:
             . .venv/bin/activate
             echo ""
             echo "install the requirements"
-            # changed pip to pip3
-            pip3 install -r radon-ctt-cli/requirements.txt
-            echo ""
-            echo ${CTT_SERVER_URL}
-            echo ${CTT_CONFIG_FILE_PATH}
+            pip install -r radon-ctt-cli/requirements.txt
             echo ""
             echo "running ctt_cli.py, execute the test and print the results"
-            # changed python to python3
-            python3 radon-ctt-cli/ctt_cli.py -u ${CTT_SERVER_URL} -c ${CTT_CONFIG_FILE_PATH}
+            python radon-ctt-cli/ctt_cli.py -u ${CTT_SERVER_URL} -c ${CTT_CONFIG_FILE_PATH}
             echo ""
             echo "unzip /tmp/results.zip"
             unzip /tmp/results.zip
