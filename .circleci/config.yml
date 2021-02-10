@@ -8,7 +8,6 @@ executors:
     machine:
 #      image: ubuntu-2004:202101-01
       image: ubuntu-1604:202101-01
-      resource_class: large
 
 jobs:
   run_VT:
