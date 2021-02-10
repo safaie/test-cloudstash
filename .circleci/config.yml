@@ -6,8 +6,8 @@ executors:
       - image: circleci/python:3.8
   machine-executor:
     machine:
-      image: ubuntu-2004:202101-01
-#      image: ubuntu-1604:202101-01
+#      image: ubuntu-2004:202101-01
+      image: ubuntu-1604:202101-01
 
 jobs:
   run_VT:
@@ -97,9 +97,9 @@ jobs:
             CTT_SERVER_URL: "http://localhost:18080/RadonCTT"
           name: Run CTT  
           command: |
+            echo "Installing python3-apt"
             sudo apt-get install python3-apt -y
-            alias python="python3"
-            alias pip="pip3"
+            echo ""
             echo "Initialize an empty file & copy the SSH key"
             mkdir -p tmp && touch tmp/awsec2.pem && echo $PRQ_AWS_SSH_KEY > tmp/awsec2.pem
             echo ""
@@ -115,10 +115,10 @@ jobs:
             . .venv/bin/activate
             echo ""
             echo "install the requirements"
-            pip install -r radon-ctt-cli/requirements.txt
+            pip3 install -r radon-ctt-cli/requirements.txt
             echo ""
             echo "running ctt_cli.py, execute the test and print the results"
-            python radon-ctt-cli/ctt_cli.py -u ${CTT_SERVER_URL} -c ${CTT_CONFIG_FILE_PATH}
+            python3 radon-ctt-cli/ctt_cli.py -u ${CTT_SERVER_URL} -c ${CTT_CONFIG_FILE_PATH}
             echo ""
             echo "unzip /tmp/results.zip"
             unzip /tmp/results.zip
