@@ -6,8 +6,8 @@ executors:
       - image: circleci/python:3.8
   machine-executor:
     machine:
-#      image: ubuntu-2004:202101-01
-      image: ubuntu-1604:202101-01
+      image: ubuntu-2004:202101-01
+#      image: ubuntu-1604:202101-01
 
 jobs:
   run_VT:
@@ -97,9 +97,6 @@ jobs:
             CTT_SERVER_URL: "http://localhost:18080/RadonCTT"
           name: Run CTT  
           command: |
-            echo "Installing python3-apt"
-            sudo apt-get install python3-apt -y
-            echo ""
             echo "Initialize an empty file & copy the SSH key"
             mkdir -p tmp && touch tmp/awsec2.pem && echo $PRQ_AWS_SSH_KEY > tmp/awsec2.pem
             echo ""
