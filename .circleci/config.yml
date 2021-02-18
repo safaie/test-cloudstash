@@ -1,13 +1,9 @@
 version: 2.1
 
 executors:
-  docker-executor:
-    docker:
-      - image: circleci/python:3.8
   machine-executor:
     machine:
       image: ubuntu-2004:202101-01
-#      image: ubuntu-1604:202101-01
 
 jobs:
   run_VT:
@@ -94,7 +90,7 @@ jobs:
             CTT_DOCKER_NAME: "RadonCTT"
             CTT_DOCKER_IMAGE: "radonconsortium/radon-ctt:latest"
             CTT_CONFIG_FILE_PATH: "radon-ctt-cli-testing/ctt_config.yaml"
-            CTT_SERVER_URL: "http://localhost:18080/RadonCTT"
+            CTT_SERVER_URL: "http://127.0.0.1:18080/RadonCTT"
           name: Run CTT  
           command: |
             echo "Initialize an empty file & copy the SSH key"
